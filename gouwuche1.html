@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{
+				padding: 0;
+				margin: 0;
+				font-size: 14px
+			}
+			#myapp{
+				width: 800px;
+				margin: 0 auto;
+			}
+			table {
+				width: 100%;
+			}
+			#tablehead{
+				padding: 10px;
+				background: #E7E7E7;
+			}
+			th{
+				padding: 10px 0;
+			}
+			img{
+				width: 100px;
+				height: 70px;
+			}
+			#tablemain{
+				background: #FAFAFA;
+				text-align: center;
+			}
+			#tablemain input{
+				width: 20px;
+				text-align: center;
+			}
+			#tablemain td{
+				padding: 10px 0;
+			}
+			#min,#add{
+				width: 20px;
+				text-align: center;
+			}
+			footer{
+				height: 50px;
+				line-height: 50px;
+				background: #FAFAFA;
+				padding-left: 10px;
+				border-bottom: 1px solid #888;
+				border-top: 1px solid #888;
+				position: fixed;
+				bottom: 0;
+				width: 790px;
+			}
+			footer div{
+				display: inline-block;
+			}
+			footer div:nth-child(1){
+				width: 260px;
+			}
+			footer div:nth-child(2){
+				width: 260px;
+			}
+			footer div:nth-child(2) span{
+				color: #F43636;
+			}
+			footer div:nth-child(3){
+				width: 160px;
+				color: #F43636;
+			}
+			footer div:nth-child(4){
+				width: 97px;
+				background:#F43636 ;
+				font-size: 16px;
+				text-align: center;
+				color: white;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="myapp">
+			<table >
+				<tr id="tablehead">
+					<th><input type="checkbox" v-model="allcheck" @click="getallcheck" /> 全选</th>
+					<th>商品名称</th>
+					<th>单价</th>
+					<th>数量</th>
+					<th>小计</th>
+					<th>操作</th>
+				</tr>
+				<tr id="tablemain" v-for="(goods,index) in goodslist">
+					<td><input type="checkbox" v-model="goods.checked"/> <img :src="goods.img"/></td>
+					<td>{{goods.name}}</td>
+					<td>￥{{goods.price}}</td>
+					<td><button id="min" @click="min(index)">-</button><input type="" v-model="goods.num"/><button id="add" @click="add(index)">+</button></td>
+					<td>￥{{goods.goodstotal}}</td>
+					<td><button @click="del(index)">删除</button></td>
+				</tr>
+			</table>
+			<footer>
+				<div>删除选中的商品</div>
+				<div>已选择<span>{{totolnum}}</span>种商品</div>
+				<div> 总价：￥{{totolprice}}</div>
+				<div>去结算</div>
+			</footer>
+		</div>
+	</body>
+	<script src="vue.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var vm=new Vue({
+			el:"#myapp",
+			data:{
+				goodslist:[
+					{
+						checked:true,
+						img:"img/aoc.jpg",
+						name:"AOC 23英寸IPS显示器",
+						price:150.00,
+						num:1,
+						goodstotal:150.00
+					
+					},
+					{
+						checked:false,
+						img:"img/canon.jpg",
+						name:"Canon/佳能 EOS 6D 单机",
+						price:230.00,
+						num:1,
+						goodstotal:230.00
+					
+					},
+					{
+						checked:false,
+						img:"img/surface.jpg",
+						name:"Microsoft/微软 Surface Pro",
+						price:400.00,
+						num:1,
+						goodstotal:400.00
+					
+					}
+				],
+				allcheck:false,
+			},
+			methods:{
+				min:function(index){
+					if(this.goodslist[index].num>0){
+						this.goodslist[index].num--
+					}
+					this.goodslist[index].goodstotal=this.goodslist[index].num*this.goodslist[index].price
+				},
+				add:function(index){
+					this.goodslist[index].num++
+					this.goodslist[index].goodstotal=this.goodslist[index].num*this.goodslist[index].price
+				},
+				del:function(index){
+					this.goodslist.splice(index,1)
+				},
+				getallcheck:function(){
+					if(!this.allcheck){
+						for(var i=0;i<this.goodslist.length;i++){
+							this.goodslist[i].checked=true
+						}
+					}else{
+						for(var i=0;i<this.goodslist.length;i++){
+							this.goodslist[i].checked=false
+						}
+					}
+				}
+			},
+			computed:{
+				totolnum:function(){
+					var num=0;
+					for(var i=0;i<this.goodslist.length;i++){
+						if(this.goodslist[i].checked){
+							num++
+						}
+					}
+					return num
+				},
+				totolprice:function(){
+					var price=0;
+					for(var i=0;i<this.goodslist.length;i++){
+						if(this.goodslist[i].checked){
+							price+=this.goodslist[i].goodstotal
+						}
+					}
+					return price
+				}
+			},
+			watch:{
+				goodslist:{
+					handler(){
+						for(var i=0;i<this.goodslist.length;i++){
+							if(this.goodslist[0].checked&&this.goodslist[1].checked&&this.goodslist[2].checked){
+								this.allcheck=true								
+								
+							}else{
+								this.allcheck=false	
+							}
+						}
+					},deep:true 
+				}
+			}
+		})
+	</script>
+</html>
